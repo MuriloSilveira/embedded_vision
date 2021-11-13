@@ -1,0 +1,148 @@
+{% load bootstrap4 %}
+{% load static %}
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="shortcut icon" href="{% static 'images/favicon.ico' %}" type="image/x-icon" sizes="256x256">
+    <title>TCC-IFSC</title>
+    {% bootstrap_css %}
+    <link href="{% static 'css/estilos_index.css' %}" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <header class="blog-header py-3">
+            <div class="row flex-nowrap justify-content-between align-items-center">
+              <div class="col-4 pt-1">
+                <img src="{% static 'images/ifsc_3.png' %}" class="rounded float-left" alt="Logo do IFSC">
+              </div>
+              <div class="col-4 text-center">
+                <p id="p2">Sistema Embarcado de Visão Computacional</p>
+              </div>
+              <div class="col-4 d-flex justify-content-end align-items-center">
+                <p class="btn btn-sm btn-outline-secondary">Usuário: {{ status_user }}</p>
+              </div>
+            </div>
+        </header>
+          <div class="nav-scroller py-1 mb-2">
+            <nav class="nav d-flex justify-content-between">
+              <a class="btn btn-outline-dark" href="{% url 'configuracao' %}" role="button">Configuração</a>
+              <a class="btn btn-outline-dark" href="{% url 'm_calibracao' %}" role="button">Calibração do Pixel</a>
+              <a class="btn btn-outline-dark" href="{% url 'result_q_dia' %}" role="button">Resultados</a>
+            </nav>
+          </div>
+        <div class="espac">
+          <h2>Sistema de Medição de Objetos</h2>
+        </div>
+        <div class="espac">
+          <h3>Dados do Lote Atual</h3>
+          <div class="espac2">
+            <div class="container">
+                  <div class="row">
+                    <div class="col">
+                      <p class="p3">Lote:</p>
+                      <p class="p4">{{ lote }}</p>
+                    </div>
+                    <div class="col-md-6">
+                      <p class="p3">Status:</p>
+                      {% if mode == 10 %}
+                        <p id="w_config">{{ status }}</p>
+                      {% endif %}
+                      {% if mode == 15 %}
+                        <p id="ready">{{ status }}</p>
+                      {% endif %}
+                      {% if mode == 20 %}
+                        <p id="active">{{ status }}</p>
+                      {% endif %}
+                      {% if mode == 30 %}
+                        <p id="suspend">{{ status }}</p>
+                      {% endif %}
+                      {% if mode == 50 %}
+                        <p id="fault">{{ status }}</p>
+                      {% endif %}
+                    </div>
+                    <div class="col">
+                      <form action="{% url 'liga' %}" method="post" class="form" autocomplete="off">
+                        {% csrf_token %}
+                        {% buttons %}
+                        <button type="submit" class="btn btn-success">Liga</button>
+                        {% endbuttons %}
+                      </form>
+                    </div>
+                    <div class="col">
+                      <form action="{% url 'desliga' %}" method="post" class="form" autocomplete="off">
+                        {% csrf_token %}
+                        {% buttons %}
+                          <button type="submit" class="btn btn-danger">Desliga</button>
+                        {% endbuttons %}
+                      </form>
+                    </div>
+              </div>
+            </div>
+          </div>
+          <table class="table">
+            <thead>
+                <tr>
+                    <th scope="col">Eixo</th>
+                    <th scope="col">Valor Máximo (mm)</th>
+                    <th scope="col">Valor Mínimo (mm)</th>
+                    <th scope="col">Valor Médio (mm)</th>
+                    <th scope="col">Valor Mediano (mm)</th>
+                    <th scope="col">Valor Modal (mm)</th>
+                    <th scope="col">Desvio Padrão (mm)</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <th scope="row">X</th>
+                    <td class="align-baseline">{{ max_valor_x }}</td>
+                    <td class="align-baseline">{{ min_valor_x }}</td>
+                    <td class="align-baseline">{{ med_valor_x }}</td>
+                    <td class="align-baseline">{{ median_valor_x }}</td>
+                    <td class="align-baseline">{{ mode_valor_x }}</td>
+                    <td class="align-baseline">{{ dpa_valor_x }}</td>
+                </tr>
+                <tr>
+                    <th scope="row">Y</th>
+                    <td class="align-baseline">{{ max_valor_y }}</td>
+                    <td class="align-baseline">{{ min_valor_y }}</td>
+                    <td class="align-baseline">{{ med_valor_y }}</td>
+                    <td class="align-baseline">{{ median_valor_y }}</td>
+                    <td class="align-baseline">{{ mode_valor_y }}</td>
+                    <td class="align-baseline">{{ dpa_valor_y }}</td>
+                </tr>
+            </tbody>
+          </table>
+        <div>
+            <img src="{% url 'video' %}" class="rounded mx-auto d-block" alt="Frame Atual">
+        </div>
+        <div class="espac">
+            <h3>Medidas Recentes</h3>
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th scope="col">Lote</th>
+                        <th scope="col">Medida em X (mm)</th>
+                        <th scope="col">Medida em Y (mm)</th>
+                        <th scope="col">Data</th>
+                        <th scope="col">Horário</th>
+                    </tr>
+                </thead>
+                <tbody>
+                {% for medida in medidas %}
+                    <tr>
+                        <th scope="row">{{ medida.lote }}</th>
+                        <td class="align-baseline">{{ medida.valor_x }}</td>
+                        <td class="align-baseline">{{ medida.valor_y }}</td>
+                        <td class="align-baseline">{{ medida.data }}</td>
+                        <td class="align-baseline">{{ medida.horario }}</td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+{% bootstrap_javascript jquery='full' %}
+</body>
+</html>

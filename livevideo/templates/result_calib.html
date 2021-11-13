@@ -1,0 +1,94 @@
+{% load bootstrap4 %}
+{% load static %}
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="shortcut icon" href="{% static 'images/favicon.ico' %}" type="image/x-icon" sizes="256x256">
+    <title>TCC-IFSC</title>
+    {% bootstrap_css %}
+    <link href="{% static 'css/estilos_calib.css' %}" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <header class="blog-header py-3">
+            <div class="row flex-nowrap justify-content-between align-items-center">
+              <div class="col-4 pt-1">
+                <img src="{% static 'images/ifsc_3.png' %}" class="rounded float-left" alt="Logo do IFSC">
+              </div>
+              <div class="col-4 text-center">
+                <p id="p2">Sistema Embarcado de Visão Computacional</p>
+              </div>
+              <div class="col-4 d-flex justify-content-end align-items-center">
+                <p class="btn btn-sm btn-outline-secondary">Usuário: {{ status_user }}</p>
+              </div>
+            </div>
+        </header>
+        <div class="nav-scroller py-1 mb-2">
+            <nav class="nav d-flex justify-content-between">
+                <a class="btn btn-outline-dark" href="{% url 'index' %}" role="button">Menu</a>
+            </nav>
+        </div>
+        <h2>Resultado Calibração de Pixel</h2>
+        <div class="espac">
+            <table class="table">
+            <thead>
+                <tr>
+                    <th scope="col">Quadrante</th>
+                    <th scope="col">Escala Eixo X (px/mm)</th>
+                    <th scope="col">Escala Eixo Y (px/mm)</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <th scope="row">1</th>
+                    <td class="align-baseline">{{ val_x1 }}</td>
+                    <td class="align-baseline">{{ val_y1 }}</td>
+                </tr>
+                <tr>
+                    <th scope="row">2</th>
+                    <td class="align-baseline">{{ val_x2 }}</td>
+                    <td class="align-baseline">{{ val_y2 }}</td>
+                </tr>
+                <tr>
+                    <th scope="row">3</th>
+                    <td class="align-baseline">{{ val_x3 }}</td>
+                    <td class="align-baseline">{{ val_y3 }}</td>
+                </tr>
+                <tr>
+                    <th scope="row">4</th>
+                    <td class="align-baseline">{{ val_x4 }}</td>
+                    <td class="align-baseline">{{ val_y4 }}</td>
+                </tr>
+                <tr>
+                    <th scope="row">5</th>
+                    <td class="align-baseline">{{ val_x5 }}</td>
+                    <td class="align-baseline">{{ val_y5 }}</td>
+                </tr>
+                <tr>
+                    <th scope="row">6</th>
+                    <td class="align-baseline">{{ val_x6 }}</td>
+                    <td class="align-baseline">{{ val_y6 }}</td>
+                </tr>
+                <tr>
+                    <th scope="row">7</th>
+                    <td class="align-baseline">{{ val_x7 }}</td>
+                    <td class="align-baseline">{{ val_y7 }}</td>
+                </tr>
+                <tr>
+                    <th scope="row">8</th>
+                    <td class="align-baseline">{{ val_x8 }}</td>
+                    <td class="align-baseline">{{ val_y8 }}</td>
+                </tr>
+                <tr>
+                    <th scope="row">9</th>
+                    <td class="align-baseline">{{ val_x9 }}</td>
+                    <td class="align-baseline">{{ val_y9 }}</td>
+                </tr>
+            </tbody>
+          </table>
+        </div>
+    </div>
+</body>
+</html>
