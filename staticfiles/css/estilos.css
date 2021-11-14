@@ -1,0 +1,101 @@
+body{
+    background-color: #ffffff;
+    color: green
+}
+h2{
+    color:dimgray;
+    text-align: center;
+}
+h3{
+    color:black;
+    
+}
+a{
+    color: green;
+}
+#p2{
+    color: green;
+    font-weight:bold;
+    font-size:x-large
+}
+.p3{
+    display: inline-block;
+    color: green;
+    font-weight:bold;
+    font-size:larger
+}
+.p4{
+    display: inline-block;
+    color: black;
+    font-weight:bold;
+    font-size:large
+}
+
+.espac{
+    margin-top: 30px
+}
+
+.espac2{
+    margin-top: 15px
+}
+
+#in_calib{
+    color: black;
+    font-weight:bold;
+    font-size:medium
+}
+
+#erro_calib{
+    color: red;
+    background-color: salmon;
+    font-weight:bold;
+    font-size:medium
+}
+
+#ok_calib{
+    color: green;
+    background-color: lightgreen;
+    font-weight:bold;
+    font-size:medium
+}
+
+#w_config{
+    display: inline-block;
+    color: white;
+    background-color: dimgray;
+    font-weight:bold;
+    font-size:large
+}
+
+#ready{
+    display: inline-block;
+    color: darkblue;
+    background-color: lightskyblue;
+    font-weight:bold;
+    font-size:large
+}
+
+#active{
+    display: inline-block;
+    color: darkgreen;
+    background-color: lightgreen;
+    font-weight:bold;
+    font-size:large
+}
+
+#suspend{
+    display: inline-block;
+    color: black;
+    background-color: lightgray;
+    font-weight:bold;
+    font-size:large
+}
+
+#fault{
+    display: inline-block;
+    color: red;
+    background-color: palegoldenrod;
+    font-weight:bold;
+    font-size:large
+}
+
