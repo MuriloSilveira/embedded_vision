@@ -39,7 +39,6 @@ job_valor_min_x = 0
 job_valor_min_y = 0
 job_lote = 0
 job_camera = ''
-
 dpa_x=0
 dpa_y=0
 media_x=0
@@ -53,11 +52,12 @@ max_y=0
 min_x=0
 min_y=0
 status=[[15,'Sistema Pronto'],[10,'Aguardando Configuração'],[20,'Sistema Ativo'],[30,'Sistema Suspenso'],[50,'Sistema em Falha']]
-
 mode=10
 query_data=''
 query_lote=0
-# Create your views here.
+#============================
+
+# Inicio das Views
 
 def index(request):
     global dpa_x
@@ -105,27 +105,9 @@ def index(request):
         if len(valores_x) > 15:
             dpa_x, media_x, mediana_x, moda_x, max_x, min_x=job_statistics(valores_x)
             dpa_y, media_y, mediana_y, moda_y, max_y, min_y=job_statistics(valores_y)
-            print("dpa_x======%f\n" %dpa_x)
-            print("media_x======%f\n" %media_x)
-            print("mediana_x======%f\n" %mediana_x)
-            print("moda_x======%f\n" %moda_x)
-            print("max_x======%f\n" %max_x)
-            print("min_x======%f\n" %min_x)
-            print("dpa_y======%f\n" %dpa_y)
-            print("media_y======%f\n" %media_y)
-            print("mediana_y======%f\n" %mediana_y)
-            print("moda_y======%f\n" %moda_y)
-            print("max_y======%f\n" %max_y)
-            print("min_y======%f\n" %min_y)
     for i in range(len(status)):
         if mode is status[i][0]:
             status_lb=status[i][1]
-            print(status[i][1])
-        else:
-            print(status[i][0])
-            print("Nao eh")
-    #status = 'Sistema Ativo'
-
     context = {
         'status_log': status_log,
         'status_user': status_user,
@@ -172,18 +154,8 @@ def configuracao(request):
             job_camera = form.cleaned_data.get("camera")
             ret_calib = form.cleaned_data.get("calibracao")
             ret_calib = dict(form.fields['calibracao'].choices)[ret_calib]
-            print("\nret_calib---")
-            print(ret_calib)
-            print("\ntype  ret_calib---")
-            print(type(ret_calib))
-            
             dados_calib=Calibracao.objects.filter(nome=ret_calib)
-            print("\ndados_calib---")
-            print(dados_calib)
-            print("\ntype dados_calib---")
-            print(type(dados_calib))
             for j in dados_calib:
-                print("Entrou no for do passar valores------\n")
                 job_calib[0][0]=float(j.val_x1)
                 job_calib[0][1]=float(j.val_y1)
                 job_calib[1][0]=float(j.val_x2)
@@ -203,8 +175,6 @@ def configuracao(request):
                 job_calib[8][0]=float(j.val_x9)
                 job_calib[8][1]=float(j.val_y9)
             messages.success(request, 'Dados do Lote Salvos com Sucesso')
-            print("Vetor job_calib eh\n")
-            print(job_calib)
             mode=15
         else:
             messages.error(request, 'Erro ao salvar os dados do Lote')
@@ -257,23 +227,15 @@ def r_calibracao(request):
         if m_calibform.is_valid():
             calib_nome = m_calibform.cleaned_data.get("nome")
             n_blocos = int(m_calibform.cleaned_data.get("n_amost"))
-            print("Forms - n_blocos ---r_calib\n")
-            print(n_blocos)
-            print("\n Tipo:")
-            print(type(n_blocos))
         else:
             messages.error(request, 'Erro ao salvar os dados iniciais da calibração')
     if erro_calib is 1:
-        print("Erro Calib is 1")
         status_calib='Garanta que o aruco está na posição demarcada em vermelho'
-        #messages.error(request, 'Erro de Leitura - Garanta que o aruco está na posição demarcada em vermelho')
         erro_calib=0
     elif erro_calib is 2:
-        #messages.success(request, 'Tamanho do pixel demarcado com sucesso!')
         status_calib='Tamanho do pixel demarcado com sucesso! Posicione no próximo quadrante'
         erro_calib=0
     elif erro_calib is 10:
-        #messages.success(request, 'Tamanho do pixel demarcado com sucesso!')
         status_calib='Posicione o aruco na posição demarcada e avance para o próximo quadrante'
         erro_calib=0
     elif erro_calib is 3:
@@ -306,15 +268,6 @@ def f_calibracao(request):
     
     form = ResCalibForm(
         request.POST or None)
-    #if str(request.method) == 'POST':
-     #   print("\nForm calib eh post================\n")
-      #  if form.is_valid():
-      #      print("\nForm calib eh valido   ================\n")
-       #     res_altura = form.cleaned_data.get("altura")
-       #     res_largura = form.cleaned_data.get("largura")
-        #    messages.success(request, 'Dimensões da amostra salvas com sucesso')
-       # else:
-          #  messages.error(request, 'Erro ao salvar as dimensões da amostra')
     if str(request.user) == 'AnonymousUser':
         status_log = 'Usuário não logado'
         status_user = 'Usuário Anônimo'
@@ -336,33 +289,18 @@ def result_calib(request):
     form = ResCalibForm(
         request.POST or None)
     if str(request.method) == 'POST':
-        print("\nForm calib eh post================\n")
         if form.is_valid():
-            print("\nForm calib eh valido   ================\n")
             res_altura = float(form.cleaned_data.get("altura"))
             res_largura = float(form.cleaned_data.get("largura"))
             messages.success(request, 'Dimensões da amostra salvas com sucesso')
         else:
             messages.error(request, 'Erro ao salvar as dimensões da amostra')
-    print("O resultado da calibracao foi\n")
-    print(calib)
-    print("\nO n_blocos eh \n")
-    print(n_blocos)
-    print("\n==============\n")
-    print("res_largura eh\n")
-    print(res_largura)
-    print("\n res_altura eh\n")
-    print(res_altura)
-    print("\n==============\n")
     for i in range(n_blocos):
         for j in range(len(calib[0])):
             calib[i][j][0]=res_largura/calib[i][j][0]
             calib[i][j][1]=res_altura/calib[i][j][1]
-    print("\n calib dps de escalar eh\n")
-    print(calib)
     px_calib=np.empty([9,2])
     for j in range(len(calib[0])):
-        print("j ",j)
         px_calib[j][0]=0
         px_calib[j][1]=0
         for i in range(n_blocos):
@@ -370,9 +308,6 @@ def result_calib(request):
             px_calib[j][1]=px_calib[j][1]+calib[i][j][1]
         px_calib[j][0]=px_calib[j][0]/n_blocos
         px_calib[j][1]=px_calib[j][1]/n_blocos
-    print("O valor mm/px é")
-    print(px_calib)
-    
     new_calib = Calibracao(nome=calib_nome, n_amostra=n_blocos, val_x1=px_calib[0][0], val_y1=px_calib[0][1], val_x2=px_calib[1][0], val_y2=px_calib[1][1], val_x3=px_calib[2][0], val_y3=px_calib[2][1], val_x4=px_calib[3][0], val_y4=px_calib[3][1], val_x5=px_calib[4][0], val_y5=px_calib[4][1], val_x6=px_calib[5][0], val_y6=px_calib[5][1], val_x7=px_calib[6][0], val_y7=px_calib[6][1], val_x8=px_calib[7][0], val_y8=px_calib[7][1], val_x9=px_calib[8][0], val_y9=px_calib[8][1])
     new_calib.save()
     calib_ok=True
@@ -436,9 +371,6 @@ def result_q_lote(request):
             ret_dia=form.cleaned_data.get("dia")
             ret_dia = dict(form.fields['dia'].choices)[ret_dia]
             query_data=ret_dia
-            print(ret_dia)
-            print(type(ret_dia))
-            print("Query do Dia OK\n")
         else:
             messages.error(request, 'Erro ao salvar os dados do Lote')
     form = QueryLoteForm(
@@ -466,10 +398,7 @@ def result_query(request):
         if form.is_valid():
             ret_lote=form.cleaned_data.get("lote")
             ret_lote = dict(form.fields['lote'].choices)[ret_lote]
-            print(ret_lote)
-            print(type(ret_lote))
             query_lote=ret_lote
-            print("Query do Lote OK\n")
         else:
             messages.error(request, 'Erro ao salvar o filtro de Lote')
     query=Medida.objects.filter(data=query_data, lote=query_lote)
@@ -491,18 +420,14 @@ def result_query(request):
 
 class VideoCamera(object):
     def __init__(self):
+        global job_camera
         self.status = False
         self.video = cv2.VideoCapture(0)
         (self.status, self.frame) = self.video.read()
         threading.Thread(target=self.update, args=()).start()
 
-    # def __del__(self):
-    # self.video.release()
-    # print("fechow")
-
     def fecha(self):
         self.video.release()
-        print("============== A CAMERA FECHOU ==================")
 
     def get_frame(self):
         img = self.frame
@@ -514,37 +439,29 @@ class VideoCamera(object):
         calib=job_calib
         # Encontra os contornos do objeto alvo
         objects_contours, img, status = object_detection(img, kernel=(3, 3), minArea=2000)
-        # print("===============objects_contours=========================\n",objects_contours)
         if status is not 10:
             # Desenha as linhas do retangulo presente na imagem
             img, box = squared_contour(img, objects_contours[0], center_color=(0, 0, 255),
                                        square_color=(255, 0, 0))
-            print("box\n", box)
             # Obtem as medidas por quadrante
             distX_px = measure_norm(img, box, 0, 1, False)
             distY_px = measure_norm(img, box, 0, 3, False)
 
             # Tranforma em cm através do vetor de calibração
-            print("----------Eixo X---------------\n")
             distX = pixel2mm(distX_px, calib, tipo=0)
-            print("----------Eixo Y---------------\n")
             distY = pixel2mm(distY_px, calib, tipo=1)
 
             # Verifica se existem circulos
             circle_ref, circle = detect_circles(img)
             if circle_ref is not None:
                 circles_dist = np.zeros(len(circle_ref), dtype=float)
-                print("N de circulos eh %d" % (len(circle_ref)))
                 for i in range(len(circle_ref)):
                     print("=========== OUTRO CIRCULO===============")
                     distY_px = measure_norm(img, circle_ref[i], 0, 1, True)
                     distY = pixel2mm(distY_px, calib, tipo=1)
                     circles_dist[i] = distY
-                print("Medidas dos circulos==== \n")
-                print(circles_dist)
             else:
                 print("Nenhum circulo encontrado\n")
-
             # Reeordena os pontos do retagulo para uma ordem da esquerda para a direita, de cima para baixo
             new_box = order_points(box)
             # Transforma vetor para inteiro para utilizar nas funções de desenho
@@ -589,8 +506,6 @@ class VideoCamera(object):
         if cont is 0:
             # Declaro o vetor de saida das medidas encontradas em cada quadrante
             calib = np.empty([n_blocos, 9, 2])
-            #print("Calib-------")
-            #print(calib)
             # Faz o loop nos 9 quadrantes
             base = img.copy()
             # Desenha os 9 quadrantes
@@ -606,7 +521,6 @@ class VideoCamera(object):
                 prox_quadrante = 0
                 ROI = img[0:y1, 0:x1]
                 calib = aruco_measure(ROI, cont, n_blocos_atual, calib, Area)
-                print(calib)
                 if calib[n_blocos_atual][cont][0] < lim_min_erro or calib[n_blocos_atual][cont][
                     1] < lim_min_erro:
                     print("Insira o aruco dentro da posição demarcada em vermelho")
@@ -630,9 +544,7 @@ class VideoCamera(object):
                 # Obtem as medidas do aruco
                 prox_quadrante = 0
                 ROI = img[0:y1, x1:x2]
-                
                 calib = aruco_measure(ROI, cont, n_blocos_atual, calib, Area)
-                print(calib)
                 if calib[n_blocos_atual][cont][0] < lim_min_erro or calib[n_blocos_atual][cont][
                     1] < lim_min_erro:
                     print("Insira o aruco dentro da posição demarcada em vermelho")
@@ -655,7 +567,6 @@ class VideoCamera(object):
                 prox_quadrante = 0
                 ROI = img[0:y1, x2:x3]
                 calib = aruco_measure(ROI, cont, n_blocos_atual, calib, Area)
-                print(calib)
                 if calib[n_blocos_atual][cont][0] < lim_min_erro or calib[n_blocos_atual][cont][
                     1] < lim_min_erro:
                     print("Insira o aruco dentro da posição demarcada em vermelho")
@@ -679,7 +590,6 @@ class VideoCamera(object):
                 prox_quadrante = 0
                 ROI = img[y1:y2, 0:x1]
                 calib = aruco_measure(ROI, cont, n_blocos_atual, calib, Area)
-                print(calib)
                 if calib[n_blocos_atual][cont][0] < lim_min_erro or calib[n_blocos_atual][cont][
                     1] < lim_min_erro:
                     erro_calib=1
@@ -704,7 +614,6 @@ class VideoCamera(object):
                 prox_quadrante = 0
                 ROI = img[y1:y2, x1:x2]
                 calib = aruco_measure(ROI, cont, n_blocos_atual, calib, Area)
-                print(calib)
                 if calib[n_blocos_atual][cont][0] < lim_min_erro or calib[n_blocos_atual][cont][
                     1] < lim_min_erro:
                     erro_calib=1
@@ -728,7 +637,6 @@ class VideoCamera(object):
                 prox_quadrante = 0
                 ROI = img[y1:y2, x2:x3]
                 calib = aruco_measure(ROI, cont, n_blocos_atual, calib, Area)
-                print(calib)
                 if calib[n_blocos_atual][cont][0] < lim_min_erro or calib[n_blocos_atual][cont][
                     1] < lim_min_erro:
                     erro_calib=1
@@ -751,7 +659,6 @@ class VideoCamera(object):
                 prox_quadrante = 0
                 ROI = img[y2:y3, 0:x1]
                 calib = aruco_measure(ROI, cont, n_blocos_atual, calib, Area)
-                print(calib)
                 if calib[n_blocos_atual][cont][0] < lim_min_erro or calib[n_blocos_atual][cont][
                     1] < lim_min_erro:
                     erro_calib=1
@@ -775,7 +682,6 @@ class VideoCamera(object):
                 prox_quadrante = 0
                 ROI = img[y2:y3, x1:x2]
                 calib = aruco_measure(ROI, cont, n_blocos_atual, calib, Area)
-                print(calib)
                 if calib[n_blocos_atual][cont][0] < lim_min_erro or calib[n_blocos_atual][cont][
                     1] < lim_min_erro:
                     erro_calib=1
@@ -798,7 +704,6 @@ class VideoCamera(object):
                 prox_quadrante = 0
                 ROI = img[y2:y3, x2:x3]
                 calib = aruco_measure(ROI, cont, n_blocos_atual, calib, Area)
-                print(calib)
                 if calib[n_blocos_atual][cont][0] < lim_min_erro or calib[n_blocos_atual][cont][
                     1] < lim_min_erro:
                     erro_calib=1
@@ -808,8 +713,6 @@ class VideoCamera(object):
                     n_blocos_atual = n_blocos_atual + 1
                     if n_blocos_atual == n_blocos:
                         erro_calib=3
-                        print("Calib final eh=====\n")
-                        print(calib)
                     elif n_blocos_atual == 1:
                         erro_calib=4
                     elif n_blocos_atual == 2:
@@ -822,7 +725,6 @@ class VideoCamera(object):
         
 
     def off(self):
-        print("Carregando Video Off\n")
         img = cv2.imread('/home/pi/SMI/django00/livevideo/static/images/video_off.png')
         _, jpeg = cv2.imencode('.jpg', img)
         return jpeg.tobytes()
@@ -834,9 +736,7 @@ class VideoCamera(object):
 
 def generate_frame():
     global en_cam
-    print("En_cam eh %d" % en_cam)
     if en_cam is 0:
-        print("Carregando Video Off\n")
         img = cv2.imread('/home/pi/SMI/django00/livevideo/static/images/video_off.png')
         _, jpeg = cv2.imencode('.jpg', img)
         frame = jpeg.tobytes()
@@ -848,9 +748,6 @@ def generate_frame():
 
 
 def calib_generate_frame():
-    #global calib_camera
-    #calib_camera = VideoCamera()
-    print("entrou--------------")
     while True:
         frame = calib_camera.calibration()
         yield (b'--frame\r\n'
@@ -867,15 +764,8 @@ def calib_video(request):
 
 def prox_calib(request):
     global prox_quadrante
-    #global calib_camera
-    
-    #calib_camera.fecha()
-
     prox_quadrante = 1
-    print('\nproximo quadrante\n')
     return HttpResponse("""<html><script>window.location.replace('/calib');</script></html>""")
-    #return render(request, 'r_calibracao.html')
-
 
 def liga(request):
     global en_cam
@@ -885,7 +775,6 @@ def liga(request):
     if mode is not 10:
         camera = VideoCamera()
         en_cam = 1
-        print('\nligou\n')
         mode=20
     else:
         print("falta configuracao\n")
@@ -899,13 +788,8 @@ def desliga(request):
     
     if mode is 20 or mode is 50:
         camera.fecha()
-        print("Type of camera\n")
-        print(type(camera))
-        print("Befone del camera ========================")
         del camera
-        print("After del camera ========================")
         en_cam = 0
-        print('\ndesligou\n')
         mode=30
     else:
         print("Nao pode desligar, mode is not 20 or 50")

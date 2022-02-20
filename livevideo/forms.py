@@ -27,13 +27,13 @@ passa_data='2021-11-03'
 
 class JobForm(forms.Form):
     lote = forms.IntegerField(label='Lote', validators=[MinValueValidator(1)])
-    max_valor_x = forms.DecimalField(label='Limite Máximo Medida Eixo X', decimal_places=2, max_digits=5,
+    max_valor_x = forms.DecimalField(label='Limite Máximo Medida Eixo X (mm)', decimal_places=2, max_digits=5,
                                      validators=[MinValueValidator(0.0)])
-    min_valor_x = forms.DecimalField(label='Limite Mínimo Medida Eixo X', decimal_places=2, max_digits=5,
+    min_valor_x = forms.DecimalField(label='Limite Mínimo Medida Eixo X (mm)', decimal_places=2, max_digits=5,
                                      validators=[MinValueValidator(0.0)])
-    max_valor_y = forms.DecimalField(label='Limite Máximo Medida Eixo Y', decimal_places=2, max_digits=5,
+    max_valor_y = forms.DecimalField(label='Limite Máximo Medida Eixo Y (mm)', decimal_places=2, max_digits=5,
                                      validators=[MinValueValidator(0.0)])
-    min_valor_y = forms.DecimalField(label='Limite Mínimo Medida Eixo Y', decimal_places=2, max_digits=5,
+    min_valor_y = forms.DecimalField(label='Limite Mínimo Medida Eixo Y (mm)', decimal_places=2, max_digits=5,
                                      validators=[MinValueValidator(0.0)])
     camera = forms.ChoiceField(label='Câmera', choices=CAM_CHOICES)
     #"""

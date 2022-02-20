@@ -1,32 +1,23 @@
+#Desenvolvido por Murilo Sileira - TCC ENG. ELÉTRICA - IFSC - 2022
+#Arquivos com as funções para o Algoritmo de Medição Dimensional por Imagem
 import cv2
 import numpy as np
 import math
 import pickle
 import statistics
 
-def teste(img):
-    gray_img=cv2.cvtColor(img,cv2.COLOR_BGR2GRAY)#Converter a imagem para a escala de cinza
-    blured_img=cv2.GaussianBlur(gray_img,(5,5),0)
-    imgCanny = cv2.Canny(blured_img, 100, 255)
-    contours, hierar= cv2.findContours(imgCanny,cv2.RETR_TREE,cv2.CHAIN_APPROX_SIMPLE)  # cv2.RETR_TREE - para encontrar os contornos externos
-    return imgCanny
 
 def object_detection(img,kernel=(5,5),minArea=2000):
     #Aplica uma mascara para encontrar o objeto
     gray_img=cv2.cvtColor(img,cv2.COLOR_BGR2GRAY)#Converter a imagem para a escala de cinza
-    #cv2.imshow("gray_img",gray_img)
     blured_img=cv2.GaussianBlur(gray_img,kernel,0)#Aplica um filtro contra ruido de frequencia da rede
-    #cv2.imshow("blured_img",blured_img)
     imgCanny = cv2.Canny(blured_img, 100, 255)  # obtem os contornos da imagem de acordo com a variação da escala de cinza, definas nos limitantes
-    #cv2.imshow("canny",imgCanny)
     #Encontra os contornos da imagem
     contours, hierar= cv2.findContours(imgCanny,cv2.RETR_TREE,cv2.CHAIN_APPROX_SIMPLE)  # cv2.RETR_TREE - para encontrar os contornos externos
-    #print("contours\n",contours)
     objects_contours = []#Defini um vetor para armazenar os contornos do objeto
     #Varre o vetor de contorno e inclui apenas os dos objetos com área conforme necessário
     for cnt in contours:
         area = cv2.contourArea(cnt)
-        #print("Area ",area)
         if area > minArea:
             objects_contours.append(cnt)
     status=0
@@ -129,8 +120,7 @@ def drawText(img,box,dist,ponto_inicial,ponto_final,Tcomp,Acomp,X_Y=0,color=(0,2
     
     #Transforma o valor do eixo Y e transforma em string
     valor_format="{:.2f}".format(dist) +" mm"
-    #valor_format=map('{:.2f}%'.format,dist) +' cm'
-    
+
     #Artificio para Rotacionar o texto no Angulo que está o objeto
     img_text=np.zeros((h_img,w_img),dtype=np.uint8)#Cria uma imagem de mesmo tamanho e cor preto para rotacionar o texto
     if X_Y==0: #0 - desenho de um texto em X ===== 1- em Y
@@ -167,7 +157,6 @@ def aruco_measure(img,cont,n_bloco,calib,minArea):
             cateto_oposto_y=new_box[3][0]-new_box[0][0]
             distY=(cateto_adj_y**2 + cateto_oposto_y**2)**0.5
             #Salva no array de calibração
-            print("distX é %f e distY é %4.2f" % (distX,distY))
             calib[n_bloco][cont][0]=distX
             calib[n_bloco][cont][1]=distY
         else:
@@ -209,7 +198,6 @@ def measure_norm(img,box,inicial=0,final=1,circle=False):
             p_reta01[0][1]=py1
             p_reta01[1][0]=px2
             p_reta01[1][1]=py2
-            print("Caso 1,2,3 - py1 -> %d    py2 -> %d", (py1,py2))
             cont=0#Contador de quantos pontos foram encontrados cruzando os eixos Y limites (y1 e y2)
         elif py1<y1 and py2>y1 and py2<=y2:#Caso 4
             p_reta01=np.zeros([3,3],dtype=int)#Defini o vetor com os pontos do segmento de reta
@@ -247,14 +235,6 @@ def measure_norm(img,box,inicial=0,final=1,circle=False):
     else:
         a=(py2-py1)/(px2-px1)
         b=(-a*px1)+py1
-        if py1==int(a*px1+b):
-            print("\nSegmento de reta - %d e %d - Validação da Equação da Reta - Ponto %d OK\n" % (inicial,final,inicial))
-        else:
-            print("Erro equação - y1....e calculo %d",(py1,int(a*px1+b)))
-        if py2==int(a*px2+b):
-            print("\nSegmento de reta - %d e %d - Validação da Equação da Reta - Ponto %d OK\n" % (inicial,final,final))
-        else:
-            print("Erro equação - y2.... %d e calculo %d" % (py2,int(a*px2+b)))
         #Analisar quais pontos dos principais eixos a equação da reta satisfaz
         #Equação da Reta entre ponto 0 e 1
         p_reta01=np.zeros([6,3],dtype=int)#6 pois é o maximo de pontos possiveis para a matriz 3x3 de calibração
@@ -279,7 +259,6 @@ def measure_norm(img,box,inicial=0,final=1,circle=False):
                         p_reta01[2+cont][0]=x_var
                         p_reta01[2+cont][1]=j
                         cont=cont+1
-            print("Variando eixo X - p_reta01\n",p_reta01)
         #Variando o Eixo X
         for i in range(2):
             if i==0: #- Para Y1 (img.shape[0]/3)
@@ -293,7 +272,6 @@ def measure_norm(img,box,inicial=0,final=1,circle=False):
                         p_reta01[2+cont][0]=j
                         p_reta01[2+cont][1]=y_var
                         cont=cont+1
-            print("Variando eixo Y - p_reta01\n",p_reta01)
         #Organizando o array das posições=================
         #Deixando com o tamanho minimo
         p_reta01=p_reta01[:(2+cont)]
@@ -309,8 +287,6 @@ def measure_norm(img,box,inicial=0,final=1,circle=False):
                     p_reta01[i][1]=p_reta01[j][1]
                     p_reta01[j][0]=tempx
                     p_reta01[j][1]=tempy
-        print("Array dos pontos ordenados:\n",p_reta01)
-        print("Numero de Pontos encontrados.....",cont)
     #Atribui o quadrante que pertence os pontos da reta
     for n in range(len(p_reta01)):
         if 0<=p_reta01[n][0] and x1>p_reta01[n][0] and 0<=p_reta01[n][1] and y1>p_reta01[n][1]:
@@ -360,7 +336,6 @@ def measure_norm(img,box,inicial=0,final=1,circle=False):
         dist_01[i][0]=(cateto_adj**2 + cateto_oposto**2)**0.5
         #Atribui o quadrante da medida calculada
         dist_01[i][1]=int(p_reta01[i][2])
-    print("Distancias da Reta entre ponto %d e %d e o respectivo quadrante\n" %(inicial,final),dist_01)
     return dist_01
 
 def pixel2mm(dist,calib,tipo=0):#Função para transformar a medida de pixel para cm e acordo com o array calibraçao
@@ -372,11 +347,9 @@ def pixel2mm(dist,calib,tipo=0):#Função para transformar a medida de pixel par
         else:
             dist[n][0]=calib[int(dist[n][1])][1]*dist[n][0]
         dist_final=dist_final+dist[n][0]
-    print("O Array das distancias convertidas foi\n",dist)
-    print("A distancia final foi de",dist_final)
     return dist_final
     
-def calib_pixel(en_cam=True,Area=2000,lim_min_erro=10):
+def calib_pixel(en_cam=True,Area=2000,lim_min_erro=10,cam_value=1):
     while True:
         n_blocos=input("\nQuantos blocos padrão com alturas diferentes deseja utilizar ? (1 a 3)\n")
         if not n_blocos.isnumeric() or int(n_blocos)>3 or int(n_blocos)<0:
@@ -385,7 +358,7 @@ def calib_pixel(en_cam=True,Area=2000,lim_min_erro=10):
             n_blocos=int(n_blocos)
             break
     if en_cam:
-        cap = cv2.VideoCapture(0)  # configuração da webcam  #1-webcam externa - 0-webcam notebook - para o raspberry cam -0
+        cap = cv2.VideoCapture(cam_value)  # configuração da webcam  #1-webcam externa - 0-webcam notebook - para o raspberry cam -0
         sucess, img = cap.read()
         #Definindo os limites dos quadrantes em X
         x1=int(img.shape[1]/3)
@@ -407,8 +380,8 @@ def calib_pixel(en_cam=True,Area=2000,lim_min_erro=10):
                 verif_vazio= True
                 if cont==0:
                     if n_blocos_atual !=0:
-                        cap = cv2.VideoCapture(0)
-                    print("Aperte Enter para ir para a próxima posição")
+                        cap = cv2.VideoCapture(cam_value)
+                    #print("Aperte Enter para ir para a próxima posição")
                     while True:
                         _, img = cap.read()
                         base=img.copy()
@@ -426,14 +399,13 @@ def calib_pixel(en_cam=True,Area=2000,lim_min_erro=10):
                             #Obtem as medidas do aruco
                             ROI=img[0:y1,0:x1]
                             calib= aruco_measure(ROI,cont,n_blocos_atual,calib,Area)
-                            print(calib)
+                            #print(calib)
                             if calib[n_blocos_atual][cont][0]<lim_min_erro or calib[n_blocos_atual][cont][1]<lim_min_erro:
                                 print("Insira o aruco dentro da posição demarcada em vermelho")
                             else:
                                 break               
                 elif cont==1:
-                    cap = cv2.VideoCapture(0)
-                    print("Aperte Enter para ir para a próxima posição")
+                    cap = cv2.VideoCapture(cam_value)
                     while True:
                         _, img = cap.read()
                         base=img.copy()
@@ -457,8 +429,7 @@ def calib_pixel(en_cam=True,Area=2000,lim_min_erro=10):
                             else:
                                 break         
                 elif cont==2:
-                    cap = cv2.VideoCapture(0)
-                    print("Aperte Enter para ir para a próxima posição")
+                    cap = cv2.VideoCapture(cam_value)
                     while True:
                         _, img = cap.read()
                         base=img.copy()
@@ -480,8 +451,7 @@ def calib_pixel(en_cam=True,Area=2000,lim_min_erro=10):
                             else:
                                 break
                 elif cont==3:
-                    cap = cv2.VideoCapture(0)
-                    print("Aperte Enter para ir para a próxima posição")
+                    cap = cv2.VideoCapture(cam_value)
                     while True:
                         _, img = cap.read()
                         base=img.copy()
@@ -504,8 +474,7 @@ def calib_pixel(en_cam=True,Area=2000,lim_min_erro=10):
                             else:
                                 break
                 elif cont==4:
-                    cap = cv2.VideoCapture(0)
-                    print("Aperte Enter para ir para a próxima posição")
+                    cap = cv2.VideoCapture(cam_value)
                     while True:
                         _, img = cap.read()
                         base=img.copy()
@@ -529,8 +498,7 @@ def calib_pixel(en_cam=True,Area=2000,lim_min_erro=10):
                             else:
                                 break
                 elif cont==5:
-                    cap = cv2.VideoCapture(0)
-                    print("Aperte Enter para ir para a próxima posição")
+                    cap = cv2.VideoCapture(cam_value)
                     while True:
                         _, img = cap.read()
                         base=img.copy()
@@ -553,8 +521,7 @@ def calib_pixel(en_cam=True,Area=2000,lim_min_erro=10):
                             else:
                                 break
                 elif cont==6:
-                    cap = cv2.VideoCapture(0)
-                    print("Aperte Enter para ir para a próxima posição")
+                    cap = cv2.VideoCapture(cam_value)
                     while True:
                         _, img = cap.read()
                         base=img.copy()
@@ -576,8 +543,7 @@ def calib_pixel(en_cam=True,Area=2000,lim_min_erro=10):
                             else:
                                 break
                 elif cont==7:
-                    cap = cv2.VideoCapture(0)
-                    print("Aperte Enter para ir para a próxima posição")
+                    cap = cv2.VideoCapture(cam_value)
                     while True:
                         _, img = cap.read()
                         base=img.copy()
@@ -600,8 +566,7 @@ def calib_pixel(en_cam=True,Area=2000,lim_min_erro=10):
                             else:
                                 break
                 else:
-                    cap = cv2.VideoCapture(0)
-                    print("Aperte Enter para ir para a próxima posição")
+                    cap = cv2.VideoCapture(cam_value)
                     while True:
                         _, img = cap.read()
                         base=img.copy()
@@ -621,7 +586,7 @@ def calib_pixel(en_cam=True,Area=2000,lim_min_erro=10):
                             if calib[n_blocos_atual][cont][0]<lim_min_erro or calib[n_blocos_atual][cont][1]<lim_min_erro:
                                 print("Insira o aruco dentro da posição demarcada em vermelho")
                             else:
-                                print("Aperte Espaço para continuar")
+                                #print("Aperte Espaço para continuar")
                                 cap.release()  # desativa webcam
                                 break
                         
@@ -631,7 +596,6 @@ def calib_pixel(en_cam=True,Area=2000,lim_min_erro=10):
                 cap.release()  # desativa webcam
             n_blocos_atual=n_blocos_atual+1
     cap.release()  # desativa webcam
-    print(calib)
     while True:
         altura=input('\nInsira a altura do aruco em milimetros:   ')
         largura=input('\nInsira a largura do aruco em milimetros:   ')
@@ -649,7 +613,7 @@ def calib_pixel(en_cam=True,Area=2000,lim_min_erro=10):
             calib[i][j][1]=altura/calib[i][j][1]
     px_calib=np.empty([9,2])
     for j in range(len(calib[0])):
-        print("j ",j)
+        #print("j ",j)
         px_calib[j][0]=0
         px_calib[j][1]=0
         for i in range(n_blocos):
@@ -657,8 +621,8 @@ def calib_pixel(en_cam=True,Area=2000,lim_min_erro=10):
             px_calib[j][1]=px_calib[j][1]+calib[i][j][1]
         px_calib[j][0]=px_calib[j][0]/n_blocos
         px_calib[j][1]=px_calib[j][1]/n_blocos
-    print("O valor mm/px é")
-    print(px_calib)
+    #print("O valor mm/px é")
+    #print(px_calib)
     calib_ok=True
     arq=open('arquivo.pck','wb')
     pickle.dump(px_calib,arq)
@@ -671,8 +635,6 @@ def detect_circles(img,minD=300,HThrs=255,LThrs=30,minR=10):
     #circles retorna a coordenada do centro e o raio --- [x , y , raio]
     circles=cv2.HoughCircles(image=bluered_img,method=cv2.HOUGH_GRADIENT,dp=1,minDist=minD,param1=HThrs,param2=LThrs,minRadius=minR,maxRadius=0)
     if circles is None:
-        print("-------- Não foram encontrados circunferências na imagem ---------")
-        #circle_points=np.zeros([1,2,2],dtype=int)
         return None,None
     else:
         circle_points=np.zeros([len(circles[0]),2,2],dtype=int)
